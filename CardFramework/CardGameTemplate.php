@@ -4,7 +4,7 @@ namespace SoftwareDesign\CardFramework;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . "Autoload.php";
 
-use SoftwareDesign\CardFramework\Deck;
+use SoftwareDesign\CardFramework\DeckInterface;
 use SoftwareDesign\CardFramework\Player;
 use SoftwareDesign\CardFramework\HandleInput;
 use SoftwareDesign\CardFramework\HumanPlayer;
@@ -15,9 +15,9 @@ abstract class CardGameTemplate implements CardGameInterface
     /**
      * The deck of this turn.
      *
-     * @var ShowdownDeck|UnoDeck
+     * @var DeckInterface
      */
-    protected ShowdownDeck|UnoDeck $deck;
+    protected DeckInterface $deck;
 
     /**
      * The game turn.

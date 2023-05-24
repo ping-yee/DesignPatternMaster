@@ -37,6 +37,17 @@ class UnoDeck extends DeckTemplate
     }
 
     /**
+     * Put the deck back to deck.
+     *
+     * @param UnoCard $card
+     * @return void
+     */
+    public function putCardBackToDeck(UnoCard $card): void
+    {
+        array_push($this->deck, $card);
+    }
+
+    /**
      * Color priority mapping.
      *
      * @param integer $suit
