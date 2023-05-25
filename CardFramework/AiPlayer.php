@@ -9,12 +9,25 @@ use SoftwareDesign\CardFramework\CardTemplate;
 
 class AiPlayer extends Player
 {
-    public function show(): CardTemplate
+    public function show(?array $canShowCardsIndex = null): CardTemplate
     {
-        if (count($this->hands) - 1 > 0) {
-            $showCardIndex = random_int(0, count($this->hands) - 1);
+        // I'm thinking...
+        sleep(1);
+
+        // Uno
+        if ($canShowCardsIndex !== null) {
+            if (count($canShowCardsIndex) === 1) {
+                $showCardIndex = $canShowCardsIndex[0];
+            } else {
+                $randomIndex = random_int(0, count($canShowCardsIndex) - 1);
+                $showCardIndex = $canShowCardsIndex[$randomIndex];
+            }
         } else {
-            $showCardIndex = 0;
+            if (count($this->hands) > 0) {
+                $showCardIndex = random_int(0, count($this->hands) - 1);
+            } else {
+                $showCardIndex = 0;
+            }
         }
 
         $card = $this->hands[$showCardIndex];

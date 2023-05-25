@@ -67,6 +67,11 @@ class Showdown extends CardGameTemplate
 
         $highestPlayer->addPoint();
 
+        // Give the default winner.
+        if ($this->winner === null) {
+            $this->winner = $this->playerList[0];
+        }
+
         if ($highestPlayer->getScore() > $this->winner->getScore()) {
             $this->winner = $highestPlayer;
         }
@@ -117,5 +122,17 @@ class Showdown extends CardGameTemplate
     protected function IsGameTurnOver(): bool
     {
         return $this->turn < 13;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setPlayerGame(): CardGameInterface
+    {
+        foreach ($this->playerList as $player) {
+            $player->setGame('Showdown');
+        }
+
+        return $this;
     }
 }

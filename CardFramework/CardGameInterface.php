@@ -57,4 +57,11 @@ interface CardGameInterface
      * @return Player
      */
     public function getWinner(): Player;
+
+    /**
+     * Set each players game.
+     *
+     * @return CardGameInterface
+     */
+    public function setPlayerGame(): CardGameInterface;
 }

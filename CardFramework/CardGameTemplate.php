@@ -29,9 +29,9 @@ abstract class CardGameTemplate implements CardGameInterface
     /**
      * The winner of this turn.
      *
-     * @var Player
+     * @var Player|null
      */
-    protected Player $winner;
+    protected ?Player $winner = null;
 
     /**
      * The engagement player list.
@@ -48,6 +48,7 @@ abstract class CardGameTemplate implements CardGameInterface
     {
         $this->setDeck()
             ->setPlayer()
+            ->setPlayerGame()
             ->shuffle()
             ->drawCard()
             ->turnStart()
@@ -64,7 +65,6 @@ abstract class CardGameTemplate implements CardGameInterface
         $playerAmount = 0;
 
         while ($playerAmount < 4) {
-
             print_r("請輸入玩家 " . $playerAmount + 1 . " 是否為機器人: (是 或 否) ");
 
             $isAi = HandleInput::getInput();
@@ -185,10 +185,7 @@ abstract class CardGameTemplate implements CardGameInterface
      */
     public function turnStart(): CardGameInterface
     {
-        $this->winner = $this->playerList[0];
-
         while ($this->IsGameTurnOver()) {
-
             // Players show the card.
             $this->eachPlayerShow();
         }
@@ -225,4 +222,11 @@ abstract class CardGameTemplate implements CardGameInterface
      * @return void
      */
     abstract protected function eachPlayerShow(): void;
+
+    /**
+     * Set each players game.
+     *
+     * @return CardGameInterface
+     */
+    abstract public function setPlayerGame(): CardGameInterface;
 }

@@ -30,6 +30,13 @@ abstract class Player implements PlayerInterface
      */
     protected array $hands = [];
 
+    /**
+     * Set the card game.
+     *
+     * @var string
+     */
+    protected string $game = '';
+
     public function __construct(string $name = null)
     {
         if (is_null($name) === false) {
@@ -84,17 +91,46 @@ abstract class Player implements PlayerInterface
         return $this->score;
     }
 
+    /**
+     * Print the player hands.
+     * It doesn't have extendability, may can be refactored.
+     *
+     * @return void
+     */
     public function showNowCards()
     {
         foreach ($this->getHands() as $key => $card) {
             $cardIndex = $key + 1;
-            print_r("第 {$cardIndex} 張為： {$card->__get("rank")} {$card->__get("suit")}" . PHP_EOL);
+
+            if ($this->game === "Showdown") {
+                print_r("第 {$cardIndex} 張為： {$card->__get("rank")} {$card->__get("suit")}" . PHP_EOL);
+            } elseif ($this->game === "Uno") {
+                print_r("第 {$cardIndex} 張為： {$card->__get("number")} {$card->__get("color")}" . PHP_EOL);
+            }
         }
         print_r(PHP_EOL);
     }
 
+    /**
+     * Name Setter.
+     *
+     * @return string
+     */
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * Game Setter.
+     *
+     * @param string $game
+     * @return PlayerInterface
+     */
+    public function setGame(string $game): PlayerInterface
+    {
+        $this->game = $game;
+
+        return $this;
     }
 }

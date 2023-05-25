@@ -31,7 +31,7 @@ class Uno extends CardGameTemplate
         $turnShowResult = [];
 
         // Player takes a turn.
-        while (true) {
+        while ($this->winner === null) {
             $player  = $this->playerList[$playerIndex];
 
             if (count($turnShowResult) === 0) {
@@ -39,19 +39,19 @@ class Uno extends CardGameTemplate
                     "card"   => $this->deck->drawCard(count($this->deck->getDeck()) - 1),
                     "player" => $player
                 ];
-                
+
                 print_r("------------------------------");
                 print_r(
-                    PHP_EOL . 
-                    "現在牌桌沒有牌, 從牌堆翻出第一張牌為: {$this->turnCardInstanceToString($turnShowResult[0]['card'])}" . 
+                    PHP_EOL .
+                    "現在牌桌沒有牌, 從牌堆翻出第一張牌為: {$this->turnCardInstanceToString($turnShowResult[0]['card'])}" .
                     PHP_EOL
                 );
                 print_r("------------------------------" . PHP_EOL . PHP_EOL);
             } else {
                 print_r("------------------------------");
                 print_r(
-                    PHP_EOL . 
-                    "現在牌桌上牌為 {$this->turnCardInstanceToString($turnShowResult[count($turnShowResult) - 1])} , 請出顏色或數字相仿的牌" . 
+                    PHP_EOL .
+                    "現在牌桌上牌為 {$this->turnCardInstanceToString($turnShowResult[count($turnShowResult) - 1]["card"])}, 請出顏色或數字相仿的牌" .
                     PHP_EOL
                 );
                 print_r("------------------------------" . PHP_EOL . PHP_EOL);
@@ -59,19 +59,19 @@ class Uno extends CardGameTemplate
 
             // Top card in the table.
             $nowCard          = $turnShowResult[count($turnShowResult) - 1]["card"];
-            $isPlayerCantShow = (empty($this->searchSameColorOrNumber($nowCard, $player)) === true);
+            $isPlayerCantShow = (count($this->searchSameColorOrNumber($nowCard, $player)) === 0);
 
-            if ($isPlayerCantShow) {
+            if ($isPlayerCantShow === true) {
                 print_r("------------------------------");
-                print_r(PHP_EOL . "玩家 {$player->getName()} 你好,你沒有任何牌可以出,系統自動幫你抽排" . PHP_EOL);
+                print_r(PHP_EOL . "玩家 {$player->getName()} 你好, 你沒有任何牌可以出, 系統自動幫你抽排" . PHP_EOL);
                 print_r("------------------------------" . PHP_EOL . PHP_EOL);
 
                 $deck = $this->deck->getDeck();
 
                 if (count($deck) === 0) {
                     // Put back until top card.
-                    for ($i=0; $i < count($turnShowResult) - 2; $i++) {
-                        $this->deck->putCardBackToDeck($turnShowResult);
+                    for ($i = 0; $i < count($turnShowResult) - 2; $i++) {
+                        $this->deck->putCardBackToDeck($turnShowResult[$i]["card"]);
                     }
 
                     // empty the turn deck.
@@ -91,23 +91,30 @@ class Uno extends CardGameTemplate
                     )
                 );
             } else {
-                $playerShowCard = $player->show();
+                $playerShowCard = $player->show($this->searchSameColorOrNumber($nowCard, $player));
 
                 $colorOrNumberIsChecked = $this->checkSameColorOrNumber(
-                    $turnShowResult[count($turnShowResult) - 1]["card"],
+                    $nowCard,
                     $playerShowCard
                 );
 
                 // Loop until the player show the current card.
-                while ($colorOrNumberIsChecked === false && $this->searchSameColorOrNumber($nowCard, $player)) {
+                while ($colorOrNumberIsChecked === false) {
+                    print_r(PHP_EOL . "----------------------------------------------------------------------");
                     print_r(
-                        PHP_EOL .
-                            "你出的卡片為： {$this->turnCardInstanceToString($playerShowCard)} , 但現在檯面上的卡片為 {$this->turnCardInstanceToString($playerShowCard)}" .
-                            PHP_EOL
+                        PHP_EOL . "你出的卡片為： {$this->turnCardInstanceToString($playerShowCard)} , 但現在檯面上的卡片為 {$this->turnCardInstanceToString($nowCard)}, 請重新出牌" . PHP_EOL
                     );
+                    print_r("----------------------------------------------------------------------" . PHP_EOL . PHP_EOL);
 
                     // Put the wrong card back to player hands.
                     $player->setHands($playerShowCard);
+
+                    $playerShowCard = $player->show($this->searchSameColorOrNumber($nowCard, $player));
+
+                    $colorOrNumberIsChecked = $this->checkSameColorOrNumber(
+                        $nowCard,
+                        $playerShowCard
+                    );
                 }
 
                 $turnShowResult[] = [
@@ -115,25 +122,22 @@ class Uno extends CardGameTemplate
                     "player" => $player
                 ];
 
+                $player->addPoint();
+
                 print_r("------------------------------");
                 print_r(
-                    PHP_EOL .
-                    "玩家 {$player->getName()} 出了 
-                {$playerShowCard->__get('number')}
-                {$playerShowCard->__get('color')}" .
-                    PHP_EOL
+                    PHP_EOL . "玩家 {$player->getName()} 出了 {$playerShowCard->__get('number')} {$playerShowCard->__get('color')}" . PHP_EOL
                 );
                 print_r("------------------------------" . PHP_EOL . PHP_EOL);
 
                 if (count($player->getHands()) === 0) {
                     $this->winner = $player;
-                    $this->getWinner();
-
+                    $this->turn  += 1;
                     break;
                 }
             }
 
-            if ($playerIndex >= 4) {
+            if ($playerIndex >= 3) {
                 $playerIndex = 0;
             } else {
                 $playerIndex += 1;
@@ -153,12 +157,19 @@ class Uno extends CardGameTemplate
     {
         $canShowCardIndex = [];
 
-        array_push(
-            $canShowCardIndex,
-            array_search($nowCard->__get("color"), $nowPlayer->getHands()),
-            array_search($nowCard->__get("number"), $nowPlayer->getHands()),
-        );
-        
+        $index = 0;
+
+        foreach ($nowPlayer->getHands() as $card) {
+            if (
+                $card->__get("color") === $nowCard->__get("color") ||
+                $card->__get("number") === $nowCard->__get("number")
+            ) {
+                array_push($canShowCardIndex, $index);
+            }
+
+            $index += 1;
+        }
+
         return $canShowCardIndex;
     }
 
@@ -201,6 +212,18 @@ class Uno extends CardGameTemplate
         print_r("------------------------------" . PHP_EOL . PHP_EOL);
 
         return $this->winner;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setPlayerGame(): CardGameInterface
+    {
+        foreach ($this->playerList as $player) {
+            $player->setGame('Uno');
+        }
+
+        return $this;
     }
 
     /**

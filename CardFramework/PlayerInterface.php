@@ -19,9 +19,10 @@ interface PlayerInterface
     /**
      * The player show his/her card index in this turn.
      *
+     * @param array|null $canShowCardsIndex
      * @return CardTemplate
      */
-    public function show(): CardTemplate;
+    public function show(?array $canShowCardsIndex = null): CardTemplate;
 
     /**
      * The setter of hands.

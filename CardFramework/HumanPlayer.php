@@ -12,7 +12,7 @@ class HumanPlayer extends Player
     /**
      * {@inheritDoc}
      */
-    public function show(): CardTemplate
+    public function show(?array $canShowCardsIndex = null): CardTemplate
     {
         print_r("{$this->getName()} 你好, 目前你的手牌有以下 : " . PHP_EOL . PHP_EOL);
 
