@@ -51,12 +51,7 @@ abstract class Player implements PlayerInterface
      */
     public function setHands(CardTemplate $card): PlayerInterface
     {
-        if (count($this->hands) < 13) {
-            array_push($this->hands, $card);
-        } else {
-            // throw exception.
-            exit;
-        }
+        array_push($this->hands, $card);
 
         return $this;
     }
