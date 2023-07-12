@@ -11,14 +11,33 @@ abstract class Sprite
      *
      * @var CollisionHandler|null
      */
-    private ?int $coordinate = null;
+    protected ?int $coordinate = null;
 
     /**
      * The type of the sprite.
      *
      * @var Hero|Water|Fire
      */
-    private mixed $type = null;
+    protected mixed $type = null;
+
+    /**
+     * Store the sprite whether it is exist or not.
+     *
+     * @var boolean
+     */
+    protected bool $isExist = true;
+
+    /**
+     * Set the sprite coordinate.
+     */
+    public function __construct(?int $coordinate = null)
+    {
+        if (is_null($coordinate) === true) {
+            $this->coordinate = random_int(0, 29);
+        } else {
+            $this->coordinate = $coordinate;
+        }
+    }
 
     /**
      * Setter.
@@ -43,6 +62,13 @@ abstract class Sprite
         return $this->{$name};
     }
 
+    /**
+     * Get the class name without namespace.
+     *
+     * @return string
+     */
+    public function getClassReflection(): string
+    {
+        return (new \ReflectionClass($this))->getShortName();
+    }
 }
-
-?>

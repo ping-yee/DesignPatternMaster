@@ -16,9 +16,9 @@ abstract class CollisionHandler
      *
      * @var CollisionHandler|null
      */
-    private ?CollisionHandler $next = null;
+    protected ?CollisionHandler $next = null;
 
-    public function __construct(CollisionHandler $next)
+    public function __construct(?CollisionHandler $next)
     {
         $this->next = $next;
     }
@@ -28,36 +28,41 @@ abstract class CollisionHandler
      * If it is, handle it.
      * If not, check the next handler.
      *
-     * @param Sprite $firSprite
-     * @param Sprite $secSprite
-     * @return void
+     * @param array  $willBeHandledData
+     * @return array return the world sprites array after collision.
      */
-    public function match(Sprite $firSprite, Sprite $secSprite): void
+    public function match(array $willBeHandledData): array
     {
-        if ($this->matchCondition($firSprite, $secSprite)) {
-            $this->handle($firSprite, $secSprite);
+        $firstSprite  = $willBeHandledData['willMovedSprite'];
+        $secondSprite = $willBeHandledData['willArrivedSprite'];
+
+        if ($this->matchCondition($firstSprite, $secondSprite)) {
+            return $this->handle($willBeHandledData);
         } else {
-            $this->next->match($firSprite, $secSprite);
+            if ($this->next === null) {
+                print("尚未有此生命種類處理類別。" . PHP_EOL . PHP_EOL);
+
+                return $willBeHandledData["sprites"];
+            } else {
+                return $this->next->match($willBeHandledData);
+            }
         }
     }
 
     /**
      * Check the pass in sprite whether match this handler.
      *
-     * @param Sprite $firSprite
-     * @param Sprite $secSprite
+     * @param Sprite $firstSprite
+     * @param Sprite $secondSprite
      * @return boolean
      */
-    abstract public function matchCondition(Sprite $firSprite, Sprite $secSprite): bool;
+    abstract public function matchCondition(Sprite $firstSprite, Sprite $secondSprite): bool;
 
     /**
      * After checking, handle the collision.
      *
-     * @param Sprite $firSprite
-     * @param Sprite $secSprite
-     * @return void
+     * @param array  $willBeHandledData
+     * @return array return the world sprites array after collision.
      */
-    abstract public function handle(Sprite $firSprite, Sprite $secSprite): void;
+    abstract public function handle(array $willBeHandledData): array;
 }
-
-?>

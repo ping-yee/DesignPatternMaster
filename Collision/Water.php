@@ -8,5 +8,4 @@ use SoftwareDesign\Collision\Sprite;
 
 class Water extends Sprite
 {
-    
 }

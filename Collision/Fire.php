@@ -8,5 +8,4 @@ use SoftwareDesign\Collision\Sprite;
 
 class Fire extends Sprite
 {
-    
 }

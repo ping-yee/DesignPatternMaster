@@ -13,5 +13,5 @@ class Hero extends Sprite
      *
      * @var integer
      */
-    private int $Hp = 30;
+    protected int $Hp = 30;
 }
